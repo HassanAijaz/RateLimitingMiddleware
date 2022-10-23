@@ -1,5 +1,5 @@
 using RateLimitingMiddleware;
-using RateLimitingMiddleware.Models;
+using RateLimitingMiddleware.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 

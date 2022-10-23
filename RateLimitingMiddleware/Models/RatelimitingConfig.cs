@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RateLimitingMiddleware.Enums;
 
 namespace RateLimitingMiddleware.Models
 {
@@ -10,17 +11,5 @@ namespace RateLimitingMiddleware.Models
     {
         public RateLimitingAlgo RateLimitingAlgo { get; set; }
         public BaseOn BaseOn { get; set; }
-    }
-
-    public enum RateLimitingAlgo
-    {
-        TokenBucket,
-        LeakyBucket
-    }
-
-    public enum BaseOn
-    {
-        Ip,
-        Client
     }
 }
