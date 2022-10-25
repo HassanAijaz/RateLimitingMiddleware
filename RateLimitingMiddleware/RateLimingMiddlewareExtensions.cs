@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using RateLimiterMiddleware;
 using RateLimitingMiddleware.Enums;
 using RateLimitingMiddleware.Helpers;
 using RateLimitingMiddleware.Models;
@@ -11,7 +12,7 @@ namespace RateLimitingMiddleware
 {
     public static class RateLimingMiddlewareExtensions
     {
-        
+
         public static IApplicationBuilder UseRateLimiting(
             this IApplicationBuilder builder, [NotNull] Action<RatelimitingConfig> options)
         {
@@ -25,7 +26,22 @@ namespace RateLimitingMiddleware
                 IConfiguration configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
                 ConfigHelper.Instance.ReadConfigurations(configuration);
             }
-            return builder.UseMiddleware<RateLimiterMiddleware>(config);
+            var buckets = CreateBuckets();
+            return builder.UseMiddleware<RateLimiterMiddleware>(config, buckets);
+        }
+
+        private static Dictionary<Tuple<string, string, string>, IRateLimitingAlgo> CreateBuckets()
+        {
+            Dictionary<Tuple<string, string, string>, IRateLimitingAlgo> bucketDic = new();
+            foreach (var rule in ConfigHelper.Instance._ipBaseConfiguration.Rules)
+            {
+                foreach (var ruleConfig in rule.Value)
+                {
+                    var key = new Tuple<string, string, string>(rule.Key, ruleConfig.EndPoint, ruleConfig.Method);
+                    bucketDic.Add(key, new TokenBucket(ruleConfig.Limit, ruleConfig.Period));
+                }
+            }
+            return bucketDic;
         }
     }
 }

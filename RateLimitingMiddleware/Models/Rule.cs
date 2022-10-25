@@ -4,7 +4,7 @@
     {
         public string EndPoint { get; set; } = string.Empty;
         public string Method { get; set; } = string.Empty;
-        public string Period { get; set; } = string.Empty;
-        public string Limit { get; set; } = string.Empty;
+        public long Period { get; set; }  
+        public long Limit { get; set; }  
     }
 }
