@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using RateLimiterMiddleware;
 using RateLimitingMiddleware.Helpers;
 using RateLimitingMiddleware.Models;
+using System.Net;
 using System.Net.Http;
 
 namespace RateLimitingMiddleware
@@ -24,7 +26,20 @@ namespace RateLimitingMiddleware
         }
         public async Task InvokeAsync(HttpContext context)
         {
-
+            string ip = context.Connection.RemoteIpAddress.ToString();
+            string method = context.Request.Method.ToString();
+            string endpoint = context.Request.Path.HasValue ? context.Request.Path.Value : string.Empty;
+            var key = BucketKeyHelper.CreateKey(ip, endpoint, method.ToUpper());
+            var isBucketExists = _buckets.TryGetValue(key, out IRateLimitingAlgo? bucket);
+            if (isBucketExists && bucket != null)
+            {
+                if (!bucket.Consume("", 1, out TimeSpan timeSpan))
+                {
+                    context.Response.StatusCode = 429;
+                    Console.WriteLine(timeSpan);
+                    return;
+                }
+            }
             await _next(context);
         }
     }

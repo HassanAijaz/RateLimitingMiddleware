@@ -52,6 +52,7 @@ namespace RateLimitingDemo.Controllers
         [HttpPost(Name = "PostWeatherForecast")]
         public IActionResult Post()
         {
+            
             return Ok("Data save successfully");
         }
     }
