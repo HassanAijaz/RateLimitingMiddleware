@@ -11,6 +11,11 @@ namespace RateLimiterMiddleware
         //number of tokens left in the bucket
         protected long _tokensLeft;
 
+        public long Capacity => _bucketCapacity;
+
+        public long RefilRate { get; }
+
+
         // refillInterval  =  seconds in which bucket will reset
         // bucketTokenCapacity = bucket size.
 
@@ -23,6 +28,7 @@ namespace RateLimiterMiddleware
 
         public TokenBucket(long bucketTokenCapacity, long refillInterval)
         {
+            RefilRate = refillInterval;
             if (bucketTokenCapacity <= 0) throw new ArgumentOutOfRangeException("bucketTokenCapacity", "bucket token capacity can not be negative");
             if (refillInterval < 0) throw new ArgumentOutOfRangeException("refillInterval", "Refill interval cannot be negative");
             _bucketCapacity = bucketTokenCapacity;

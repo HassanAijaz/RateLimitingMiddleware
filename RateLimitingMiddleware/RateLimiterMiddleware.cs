@@ -35,8 +35,8 @@ namespace RateLimitingMiddleware
             {
                 if (!bucket.Consume("", 1, out TimeSpan timeSpan))
                 {
-                    context.Response.StatusCode = 429;
-                    Console.WriteLine(timeSpan);
+                    context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+                    await context.Response.WriteAsync($"Api calls quota exceeded! maximum {bucket.Capacity} per {TimeSpan.FromMilliseconds(bucket.RefilRate).TotalSeconds} seconds. Retry after {timeSpan.TotalSeconds}");
                     return;
                 }
             }

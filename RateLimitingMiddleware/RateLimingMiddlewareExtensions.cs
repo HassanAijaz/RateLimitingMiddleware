@@ -38,7 +38,7 @@ namespace RateLimitingMiddleware
                 foreach (var ruleConfig in rule.Value)
                 {
                     var key = BucketKeyHelper.CreateKey(rule.Key, ruleConfig.EndPoint, ruleConfig.Method);
-                    bucketDic.Add(key, new TokenBucket(ruleConfig.Limit, ruleConfig.Period));
+                    bucketDic.Add(key, new TokenBucket(ruleConfig.Limit, (long)TimeSpan.FromSeconds(ruleConfig.Period).TotalMilliseconds));
                 }
             }
             return bucketDic;
